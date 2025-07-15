@@ -1,103 +1,156 @@
-import Image from "next/image";
+"use client";
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Image from 'next/image';
+import { useState } from 'react';
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [items, setItems] = useState([
+    {
+      id: 1,
+      title: "Columbia Nariñó",
+      category: "커피콩1",
+      price: 5000,
+      image: "https://i.imgur.com/HKOFQYa.jpeg",
+    },
+    {
+      id: 2,
+      title: "Columbia Nariñó",
+      category: "커피콩2",
+      price: 6000,
+      image: "https://i.imgur.com/HKOFQYa.jpeg",
+    },
+    {
+      id: 3,
+      title: "Columbia Nariñó",
+      category: "커피콩3",
+      price: 7000,
+      image: "https://i.imgur.com/HKOFQYa.jpeg",
+    },
+    {
+      id: 4,
+      title: "Columbia Nariñó",
+      category: "커피콩4",
+      price: 8000,
+      image: "https://i.imgur.com/HKOFQYa.jpeg",
+    }
+  ]);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const [cart, setCart] = useState<Record<number, number>>({});
+
+  const handleAdd = (id: number) => {
+    setCart((prev) => ({
+      ...prev,
+      [id]: (prev[id] || 0) + 1,
+    }));
+  };
+
+  const totalPrice = Object.entries(cart).reduce((sum, [id, qty]) => {
+    const item = items.find((i) => i.id === +id);
+    return sum + (item ? item.price * qty : 0);
+  }, 0);
+
+  return (
+    <div className="container-fluid">
+      <div className="row justify-content-center m-4">
+        <h1 className="text-center">Grids & Circle</h1>
+      </div>
+      <div className="card">
+        <div className="row">
+          {/* 상품 목록 */}
+          <div className="col-md-8 mt-4 d-flex flex-column align-items-start p-3 pt-0">
+            <h5 className="flex-grow-0"><b>상품 목록</b></h5>
+            <ul className="list-group products w-100">
+              {items.map(item => (
+                <li key={item.id} className="list-group-item d-flex mt-3">
+                  <div className="col-2">
+                    <Image className="img-fluid" src={item.image} alt="img" width={56} height={56} />
+                  </div>
+                  <div className="col">
+                    <div className="row text-muted">{item.category}</div>
+                    <div className="row">{item.title}</div>
+                  </div>
+                  <div className="col text-center price">{item.price.toLocaleString()}원</div>
+                  <div className="col text-end action">
+                    <button className="btn btn-outline-dark btn-sm" onClick={() => handleAdd(item.id)}>추가</button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* 요약 카드 */}
+          <div className="col-md-4 summary p-4">
+            <div><h5 className="m-0 p-0"><b>Summary</b></h5></div>
+            <hr />
+            <div className="row">
+              {Object.entries(cart).map(([id, qty]) => {
+                const item = items.find(i => i.id === +id);
+                if (!item) return null;
+                return (
+                  <h6 key={id} className="p-0">
+                    {item.title} <span className="badge bg-dark">{qty}개</span>
+                  </h6>
+                );
+              })}
+            </div>
+
+            <form>
+              <div className="mb-3">
+                <label htmlFor="email" className="form-label">이메일</label>
+                <input type="email" className="form-control mb-1" id="email" />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="address" className="form-label">주소</label>
+                <input type="text" className="form-control mb-1" id="address" />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="postcode" className="form-label">우편번호</label>
+                <input type="text" className="form-control" id="postcode" />
+              </div>
+              <div>※ 당일 오후 2시 이후의 주문은 다음날 배송을 시작합니다.</div>
+            </form>
+
+            <div className="row pt-2 pb-2 border-top">
+              <h5 className="col">총금액</h5>
+              <h5 className="col text-end">{totalPrice.toLocaleString()}원</h5>
+            </div>
+
+            <button className="btn btn-dark col-12">결제하기</button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      <style jsx>{`
+        body {
+          background: #ddd;
+        }
+        .card {
+          margin: auto;
+          max-width: 950px;
+          width: 90%;
+          box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+          border-radius: 1rem;
+          border: transparent;
+        }
+        .summary {
+          background-color: #ddd;
+          border-top-right-radius: 1rem;
+          border-bottom-right-radius: 1rem;
+          padding: 4vh;
+          color: rgb(65, 65, 65);
+        }
+        @media (max-width: 767px) {
+          .summary {
+            border-top-right-radius: unset;
+            border-bottom-left-radius: 1rem;
+          }
+        }
+        .products .price,
+        .products .action {
+          line-height: 38px;
+        }
+      `}</style>
     </div>
   );
 }
