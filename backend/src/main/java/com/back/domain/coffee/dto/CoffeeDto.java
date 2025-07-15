@@ -1,4 +1,4 @@
-package com.back.entity.item.dto;
+package com.back.domain.coffee.dto;
 
 public record CoffeeDto(
         String coffeeName,
