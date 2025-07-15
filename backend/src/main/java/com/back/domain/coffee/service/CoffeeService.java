@@ -5,6 +5,8 @@ import com.back.domain.coffee.repository.CoffeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CoffeeService {
@@ -20,5 +22,9 @@ public class CoffeeService {
         }
 
         coffeeRepository.save(new Coffee(coffeeName, coffeePrice));
+    }
+
+    public List<Coffee> findAll() {
+        return coffeeRepository.findAll();
     }
 }
