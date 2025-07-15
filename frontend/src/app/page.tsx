@@ -5,48 +5,32 @@ import Image from 'next/image';
 import { useState } from 'react';
 
 export default function Home() {
-  const [items, setItems] = useState([
-    {
-      id: 1,
-      title: "Columbia Nariñó",
-      category: "커피콩1",
-      price: 5000,
-      image: "https://i.imgur.com/HKOFQYa.jpeg",
-    },
-    {
-      id: 2,
-      title: "Columbia Nariñó",
-      category: "커피콩2",
-      price: 6000,
-      image: "https://i.imgur.com/HKOFQYa.jpeg",
-    },
-    {
-      id: 3,
-      title: "Columbia Nariñó",
-      category: "커피콩3",
-      price: 7000,
-      image: "https://i.imgur.com/HKOFQYa.jpeg",
-    },
-    {
-      id: 4,
-      title: "Columbia Nariñó",
-      category: "커피콩4",
-      price: 8000,
-      image: "https://i.imgur.com/HKOFQYa.jpeg",
-    }
+  const [items] = useState([
+    { id: 1, title: "Columbia Nariñó1", category: "커피콩1", price: 5000, image: "https://i.imgur.com/HKOFQYa.jpeg" },
+    { id: 2, title: "Columbia Nariñó2", category: "커피콩2", price: 6000, image: "https://i.imgur.com/HKOFQYa.jpeg" },
+    { id: 3, title: "Columbia Nariñó3", category: "커피콩3", price: 7000, image: "https://i.imgur.com/HKOFQYa.jpeg" },
+    { id: 4, title: "Columbia Nariñó4", category: "커피콩4", price: 8000, image: "https://i.imgur.com/HKOFQYa.jpeg" },
   ]);
 
   const [cart, setCart] = useState<Record<number, number>>({});
 
   const handleAdd = (id: number) => {
-    setCart((prev) => ({
-      ...prev,
-      [id]: (prev[id] || 0) + 1,
-    }));
+    setCart(prev => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
+  };
+
+  const handleRemove = (id: number) => {
+    setCart(prev => {
+      const qty = (prev[id] || 0) - 1;
+      if (qty <= 0) {
+        const { [id]: _, ...rest } = prev;
+        return rest;
+      }
+      return { ...prev, [id]: qty };
+    });
   };
 
   const totalPrice = Object.entries(cart).reduce((sum, [id, qty]) => {
-    const item = items.find((i) => i.id === +id);
+    const item = items.find(i => i.id === +id);
     return sum + (item ? item.price * qty : 0);
   }, 0);
 
@@ -59,7 +43,7 @@ export default function Home() {
         <div className="row">
           {/* 상품 목록 */}
           <div className="col-md-8 mt-4 d-flex flex-column align-items-start p-3 pt-0">
-            <h5 className="flex-grow-0"><b>상품 목록</b></h5>
+            <h5><b>상품 목록</b></h5>
             <ul className="list-group products w-100">
               {items.map(item => (
                 <li key={item.id} className="list-group-item d-flex mt-3">
@@ -81,19 +65,30 @@ export default function Home() {
 
           {/* 요약 카드 */}
           <div className="col-md-4 summary p-4">
-            <div><h5 className="m-0 p-0"><b>Summary</b></h5></div>
+            <h5><b>Summary</b></h5>
             <hr />
-            <div className="row">
+            <div className="row mb-3">
               {Object.entries(cart).map(([id, qty]) => {
                 const item = items.find(i => i.id === +id);
                 if (!item) return null;
                 return (
-                  <h6 key={id} className="p-0">
-                    {item.title} <span className="badge bg-dark">{qty}개</span>
-                  </h6>
+                  <div key={id} className="d-flex align-items-center mb-2">
+                    <span className="me-2">{item.title}</span>
+                    <span className="badge bg-dark me-1">{qty}개</span>
+                    <button
+                      className="btn btn-outline-dark btn-sm me-1"
+                      onClick={() => handleAdd(item.id)}
+                    >+</button>
+                    <button
+                      className="btn btn-outline-danger btn-sm me-1"
+                      onClick={() => handleRemove(item.id)}
+                    >-</button>
+                  </div>
                 );
               })}
             </div>
+
+            
 
             <form>
               <div className="mb-3">
@@ -122,14 +117,12 @@ export default function Home() {
       </div>
 
       <style jsx>{`
-        body {
-          background: #ddd;
-        }
+        body { background: #ddd; }
         .card {
           margin: auto;
           max-width: 950px;
           width: 90%;
-          box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+          box-shadow: 0 6px 20px rgba(0,0,0,0.19);
           border-radius: 1rem;
           border: transparent;
         }
@@ -138,7 +131,7 @@ export default function Home() {
           border-top-right-radius: 1rem;
           border-bottom-right-radius: 1rem;
           padding: 4vh;
-          color: rgb(65, 65, 65);
+          color: #414141;
         }
         @media (max-width: 767px) {
           .summary {
@@ -146,8 +139,7 @@ export default function Home() {
             border-bottom-left-radius: 1rem;
           }
         }
-        .products .price,
-        .products .action {
+        .products .price, .products .action {
           line-height: 38px;
         }
       `}</style>
