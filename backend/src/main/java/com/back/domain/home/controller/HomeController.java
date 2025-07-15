@@ -1,7 +1,6 @@
-package com.back.entity.home;
+package com.back.domain.home.controller;
 
-import com.back.entity.item.entity.CoffeeNames;
-import org.springframework.stereotype.Controller;
+import com.back.domain.coffee.entity.CoffeeNames;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
