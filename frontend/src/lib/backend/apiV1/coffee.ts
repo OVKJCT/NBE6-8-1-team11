@@ -7,7 +7,7 @@ type Coffee = {
 };
 
 export const getCoffeeList = async (): Promise<Coffee[]> => {
-  return apiFetch("/api/coffee");
+  return apiFetch("/api/coffees");
 };
 
 export interface CreateOrderRequest {
