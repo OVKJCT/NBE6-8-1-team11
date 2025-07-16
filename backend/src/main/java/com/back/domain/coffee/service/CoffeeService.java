@@ -36,6 +36,7 @@ public class CoffeeService {
         coffeeRepository.save(new Coffee(coffeeName, coffeePrice));
     }
 
+    @Transactional(readOnly = true)
     public List<Coffee> findAll() {
         return coffeeRepository.findAll();
     }

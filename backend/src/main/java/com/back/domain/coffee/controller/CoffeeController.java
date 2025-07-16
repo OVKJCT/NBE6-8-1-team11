@@ -29,7 +29,6 @@ public class CoffeeController {
     private final CoffeeService coffeeService;
 
     @GetMapping("/coffees")
-    @Transactional(readOnly = true)
     @Operation(summary = "커피 목록 조회")
     public List<CoffeeDto> getCoffee() {
         List<Coffee> coffeeList = coffeeService.findAll();
@@ -41,7 +40,6 @@ public class CoffeeController {
     }
 
     @GetMapping("/coffees/{id}")
-    @Transactional(readOnly = true)
     @Operation(summary = "커피 이미지 조회")
     public ResponseEntity<byte[]> getCoffeeImage(@PathVariable int id) throws IOException {
         ClassPathResource imgFile = new ClassPathResource("static/images/" + id + ".png");

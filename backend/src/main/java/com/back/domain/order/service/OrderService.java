@@ -32,8 +32,7 @@ public class OrderService {
         LocalDateTime now = LocalDateTime.now();
         List<Order> orders = orderRepository.findByCreateDateBefore(now);
 
-        for(Order o : orders) {
-            //Order 삭제 코드
-        }
+        //Order 삭제 코드
+        orderRepository.deleteAll(orders);
     }
 }
