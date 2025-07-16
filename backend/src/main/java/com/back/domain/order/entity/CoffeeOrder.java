@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 public class CoffeeOrder extends BaseEntity {
     private String coffeeId;
@@ -19,8 +20,8 @@ public class CoffeeOrder extends BaseEntity {
     private String address;
     private String zipCode;
 
-    public CoffeeOrder(String orderId, int quantity, String email, String address, String zipCode) {
-        this.coffeeId = orderId;
+    public CoffeeOrder(String coffeeId, int quantity, String email, String address, String zipCode) {
+        this.coffeeId = coffeeId;
         this.quantity = quantity;
         this.email = email;
         this.address = address;
