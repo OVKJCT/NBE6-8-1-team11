@@ -4,13 +4,20 @@ import com.back.domain.coffee.entity.Coffee;
 import com.back.domain.coffee.repository.CoffeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CoffeeService {
     private final CoffeeRepository coffeeRepository;
+
+    public Coffee findById(int id) {
+        return coffeeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 주문 ID의 커피 상품이 존재하지 않습니다."));
+    }
 
     public long count() {
         return coffeeRepository.count();
