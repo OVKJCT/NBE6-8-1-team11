@@ -1,7 +1,8 @@
 package com.back.global.initData;
 
 import com.back.domain.coffee.service.CoffeeService;
-import com.back.domain.order.entity.CoffeeOrder;
+import com.back.domain.order.entity.Order;
+import com.back.domain.order.entity.OrderItem;
 import com.back.domain.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ public class BaseInitData {
     ApplicationRunner baseInitDataApplicationRunner() {
         return args -> {
             self.work1();
+            self.work2();
         };
     }
 
@@ -41,9 +43,26 @@ public class BaseInitData {
             coffeeService.addCoffee(ETHIOPIA, 3000);
             coffeeService.addCoffee(BRAZILL, 3500);
         }
+    }
 
+    @Transactional
+    public void work2() {
+        //초기화
         if (orderService.count() == 0) {
-            orderService.addOrder(new CoffeeOrder("1", 1, "asd@naver.com", "서울시 강남구 역삼동", "123-456"));
+            Order order = new Order();
+            order.setEmail("test@naver.com");
+            order.setAddress("서울시 강남구 역삼동");
+            order.setZipCode("01234");
+
+
+            int id1 = coffeeService.findIdByName(COLUMBIA_NARINO);
+            int id2 = coffeeService.findIdByName(COLUMBIA_QUINDIO);
+            OrderItem orderItem1 = new OrderItem(id1, 2);
+            OrderItem orderItem2 = new OrderItem(id2, 4);
+            order.addOrderItem(orderItem1);
+            order.addOrderItem(orderItem2);
+
+            orderService.saveOrder(order);
         }
     }
 }

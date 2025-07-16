@@ -2,7 +2,6 @@ package com.back.domain.coffee.service;
 
 import com.back.domain.coffee.entity.Coffee;
 import com.back.domain.coffee.repository.CoffeeRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +14,11 @@ import java.util.List;
 public class CoffeeService {
     private final CoffeeRepository coffeeRepository;
 
+    public int findIdByName(String coffeeName) {
+        return coffeeRepository.findByCoffeeName(coffeeName)
+                .orElseThrow(() -> new IllegalArgumentException("해당 커피 상품이 존재하지 않습니다."))
+                .getId();
+    }
     public Coffee findById(int id) {
         return coffeeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문 ID의 커피 상품이 존재하지 않습니다."));
