@@ -28,7 +28,7 @@ export default function Home() {
         const data = await getCoffeeList();
         setItems(data.map((item) => ({
           ...item,
-          image: "https://i.imgur.com/HKOFQYa.jpeg", // 임시 이미지
+          image: `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/coffees/${item.id}`,
           title: item.coffeeName,
           price: item.coffeePrice,
           category: "커피"

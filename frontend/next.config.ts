@@ -1,9 +1,17 @@
-import type { NextConfig } from "next";
+// next.config.js
 
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   images: {
-    domains: ["i.imgur.com"], // 외부 이미지 허용
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '8080',
+        pathname: '/api/coffees/**',
+      },
+    ],
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
