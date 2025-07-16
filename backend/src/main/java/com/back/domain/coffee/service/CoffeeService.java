@@ -2,6 +2,7 @@ package com.back.domain.coffee.service;
 
 import com.back.domain.coffee.entity.Coffee;
 import com.back.domain.coffee.repository.CoffeeRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

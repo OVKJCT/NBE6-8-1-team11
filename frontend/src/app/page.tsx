@@ -2,17 +2,44 @@
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getCoffeeList } from '@/lib/backend/apiV1/coffee';
+import { createOrder } from '@/lib/backend/apiV1/coffee';
+
+type Coffee = {
+  id: number;
+  coffeeName: string;
+  coffeePrice: number;
+  image?: string;
+  title?: string;
+  category?: string;
+};
 
 export default function Home() {
-  const [items] = useState([
-    { id: 1, title: "Columbia Nariñó1", category: "커피콩1", price: 5000, image: "https://i.imgur.com/HKOFQYa.jpeg" },
-    { id: 2, title: "Columbia Nariñó2", category: "커피콩2", price: 6000, image: "https://i.imgur.com/HKOFQYa.jpeg" },
-    { id: 3, title: "Columbia Nariñó3", category: "커피콩3", price: 7000, image: "https://i.imgur.com/HKOFQYa.jpeg" },
-    { id: 4, title: "Columbia Nariñó4", category: "커피콩4", price: 8000, image: "https://i.imgur.com/HKOFQYa.jpeg" },
-  ]);
-
+  const [items, setItems] = useState<Coffee[]>([]);
   const [cart, setCart] = useState<Record<number, number>>({});
+  const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
+  const [zipCode, setZipCode] = useState("");
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const data = await getCoffeeList();
+        setItems(data.map((item) => ({
+          ...item,
+          image: "https://i.imgur.com/HKOFQYa.jpeg", // 임시 이미지
+          title: item.coffeeName,
+          price: item.coffeePrice,
+          category: "커피"
+        })));
+      } catch (error) {
+        console.error("커피 목록 불러오기 실패:", error);
+      }
+    };
+
+    fetch();
+  }, []);
 
   const handleAdd = (id: number) => {
     setCart(prev => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
@@ -31,8 +58,31 @@ export default function Home() {
 
   const totalPrice = Object.entries(cart).reduce((sum, [id, qty]) => {
     const item = items.find(i => i.id === +id);
-    return sum + (item ? item.price * qty : 0);
+    return sum + (item ? item.coffeePrice * qty : 0);
   }, 0);
+
+  const handleOrder = async () => {
+    try {
+      const orders = Object.entries(cart).map(([id, qty]) => ({
+        orderId: id,
+        quantity: qty,
+        email,
+        address,
+        zipCode,
+      }));
+
+      await Promise.all(orders.map(order => createOrder(order)));
+
+      alert("주문이 완료되었습니다!");
+      setCart({});
+      setEmail("");
+      setAddress("");
+      setZipCode("");
+    } catch (error) {
+      console.error("주문 실패:", error);
+      alert("주문 중 오류가 발생했습니다.");
+    }
+  };
 
   return (
     <div className="container-fluid">
@@ -48,13 +98,13 @@ export default function Home() {
               {items.map(item => (
                 <li key={item.id} className="list-group-item d-flex mt-3">
                   <div className="col-2">
-                    <Image className="img-fluid" src={item.image} alt="img" width={56} height={56} />
+                    <Image className="img-fluid" src={item.image!} alt="img" width={56} height={56} />
                   </div>
                   <div className="col">
                     <div className="row text-muted">{item.category}</div>
                     <div className="row">{item.title}</div>
                   </div>
-                  <div className="col text-center price">{item.price.toLocaleString()}원</div>
+                  <div className="col text-center price">{item.coffeePrice.toLocaleString()}원</div>
                   <div className="col text-end action">
                     <button className="btn btn-outline-dark btn-sm" onClick={() => handleAdd(item.id)}>추가</button>
                   </div>
@@ -88,20 +138,21 @@ export default function Home() {
               })}
             </div>
 
-            
-
             <form>
               <div className="mb-3">
                 <label htmlFor="email" className="form-label">이메일</label>
-                <input type="email" className="form-control mb-1" id="email" />
+                <input type="email" className="form-control mb-1" id="email"
+                  value={email} onChange={e => setEmail(e.target.value)} />
               </div>
               <div className="mb-3">
                 <label htmlFor="address" className="form-label">주소</label>
-                <input type="text" className="form-control mb-1" id="address" />
+                <input type="text" className="form-control mb-1" id="address"
+                  value={address} onChange={e => setAddress(e.target.value)} />
               </div>
               <div className="mb-3">
                 <label htmlFor="postcode" className="form-label">우편번호</label>
-                <input type="text" className="form-control" id="postcode" />
+                <input type="text" className="form-control" id="postcode"
+                  value={zipCode} onChange={e => setZipCode(e.target.value)} />
               </div>
               <div>※ 당일 오후 2시 이후의 주문은 다음날 배송을 시작합니다.</div>
             </form>
@@ -111,7 +162,7 @@ export default function Home() {
               <h5 className="col text-end">{totalPrice.toLocaleString()}원</h5>
             </div>
 
-            <button className="btn btn-dark col-12">결제하기</button>
+            <button className="btn btn-dark col-12" onClick={handleOrder}>결제하기</button>
           </div>
         </div>
       </div>
