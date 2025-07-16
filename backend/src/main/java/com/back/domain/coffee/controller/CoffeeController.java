@@ -26,7 +26,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "CoffeeController", description = "API 커피 컨트롤러")
 public class CoffeeController {
-
     private final CoffeeService coffeeService;
 
     @GetMapping("/coffees")
