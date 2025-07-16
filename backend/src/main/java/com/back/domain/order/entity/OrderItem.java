@@ -16,10 +16,15 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long productId; // 커피 제품 ID
+    private int productId; // 커피 제품 ID
     private int quantity;   // 수량
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
+
+    public OrderItem(int productId, int quantity) {
+        this.productId = productId;
+        this.quantity = quantity;
+    }
 }

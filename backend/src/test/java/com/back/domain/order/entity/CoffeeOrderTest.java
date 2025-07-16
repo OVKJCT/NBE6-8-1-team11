@@ -7,10 +7,10 @@ import com.back.domain.order.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -19,7 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -57,15 +58,14 @@ class CoffeeOrderTest {
     }
 
     @Test
-    @DisplayName("유효한 커피 주문 요청이 성공적으로 처리되어야 한다")
+    @DisplayName("커피 주문 확인")
     void t2() throws Exception {
-        // 1. 테스트할 요청 DTO 생성
         OrderRequest.OrderItemDto item1 = new OrderRequest.OrderItemDto();
-        item1.setProductId(101L);
+        item1.setProductId(1);
         item1.setQuantity(2);
 
         OrderRequest.OrderItemDto item2 = new OrderRequest.OrderItemDto();
-        item2.setProductId(205L);
+        item2.setProductId(2);
         item2.setQuantity(1);
 
         OrderRequest orderRequest = new OrderRequest();
@@ -78,12 +78,12 @@ class CoffeeOrderTest {
         String jsonRequest = objectMapper.writeValueAsString(orderRequest);
 
         // 2. MockMvc를 사용하여 POST 요청 수행 및 결과 검증
-        mvc.perform(post("/api/orders") // POST 요청을 /api/orders 엔드포인트로 보냄
-                        .contentType(MediaType.APPLICATION_JSON) // 요청 본문의 Content-Type을 JSON으로 설정
+        long count = orderService.count() + 1;
+        mvc.perform(
+                post("/api/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest)) // 요청 본문에 JSON 문자열을 포함
-                .andExpect(status().isOk()) // HTTP 상태 코드가 200 OK인지 검증
-                .andExpect(content().string("주문이 성공적으로 접수되었습니다.")); // 응답 본문이 예상과 일치하는지 검증
+                .andExpect(status().isOk())
+                .andExpect(content().string("주문이 성공적으로 접수되었습니다. 주문 ID: " + count));// 주문 ID는 실제로는 동적으로 생성되므로, 테스트 환경에서는 고정된 값을 사용하거나 Mocking을 고려해야 합니다.;
     }
-
-
 }

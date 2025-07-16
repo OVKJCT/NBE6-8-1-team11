@@ -1,6 +1,6 @@
 package com.back.domain.order.service;
 
-import com.back.domain.order.entity.CoffeeOrder;
+import com.back.domain.order.entity.Order;
 import com.back.domain.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,9 @@ public class OrderService {
         return orderRepository.count();
     }
 
-    public CoffeeOrder addOrder(CoffeeOrder order) {
+    public Order saveOrder(Order order) {
         return orderRepository.save(order);
     }
+
+    //주문 조회 메서드 추가 가능
 }

@@ -15,7 +15,7 @@ public class OrderRequest {
     @Getter
     @Setter
     public static class OrderItemDto {
-        private Long productId;
+        private int productId;
         private int quantity;
     }
 }
