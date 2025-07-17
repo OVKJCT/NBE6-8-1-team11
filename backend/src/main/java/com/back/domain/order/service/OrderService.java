@@ -33,8 +33,8 @@ public class OrderService {
         return orderRepository.deleteByEmail(email);
     }
 
-    //매일 오루 2시에 주문 처리
-    @Scheduled(cron = "0 0 14 * * *")
+    //매일 오후 2시에 주문 처리
+    @Scheduled(cron = "${scheduler.order.cron}")
     public void processOrders() {
         LocalDateTime now = LocalDateTime.now();
         List<Order> orders = orderRepository.findByCreateDateBefore(now);
