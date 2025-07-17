@@ -9,10 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,14 +29,25 @@ public class OrderController {
     //    { "productId": 2, "quantity": 4 }
     //  ]
     //}
-    @PostMapping("/orders")
+    @GetMapping("/orders")
+    @Operation(summary = "주문 목록 조회")
+    public List<OrderRequest> getOrder() {
+        List<Order> orderList = orderService.findAll();
+
+        return orderList
+                .stream()
+                .map(OrderRequest::new)
+                .toList();
+    }
+
+    @PostMapping("/orders/new")
     @Operation(summary = "주문 생성")
     public ResponseEntity<String> createOrder(@Validated @RequestBody OrderRequest orderRequest) {
         // DTO를 엔티티로 변환하는 과정
         Order order = new Order();
         order.setEmail(orderRequest.getEmail());
         order.setAddress(orderRequest.getAddress());
-        order.setZipCode(orderRequest.getZipcode());
+        order.setZipCode(orderRequest.getZipCode());
 
         List<OrderItem> orderItems = orderRequest.getItems().stream()
                 .map(itemDto -> {

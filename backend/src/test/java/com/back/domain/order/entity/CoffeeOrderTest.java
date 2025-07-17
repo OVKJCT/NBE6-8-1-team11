@@ -72,7 +72,7 @@ class CoffeeOrderTest {
         orderRequest.setItems(Arrays.asList(item1, item2));
         orderRequest.setEmail("test@example.com");
         orderRequest.setAddress("서울특별시 테스트구 테스트로 123");
-        orderRequest.setZipcode("01234");
+        orderRequest.setZipCode("01234");
 
         // DTO를 JSON 문자열로 변환
         String jsonRequest = objectMapper.writeValueAsString(orderRequest);
