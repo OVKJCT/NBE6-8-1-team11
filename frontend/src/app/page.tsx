@@ -66,7 +66,7 @@ export default function Home() {
       alert("우편번호를 입력해주세요.");
       return;
     }
-    
+
     try {
       const items = Object.entries(cart).map(([id, qty]) => ({
         productId: Number(id),
@@ -76,7 +76,7 @@ export default function Home() {
       const orderRequest = {
         email,
         address,
-        zipcode: zipCode,
+        zipCode,
         items,
       };
 
