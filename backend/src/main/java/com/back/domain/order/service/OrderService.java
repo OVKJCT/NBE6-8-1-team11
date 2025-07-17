@@ -29,6 +29,10 @@ public class OrderService {
         return orderRepository.findAll();
     }
 
+    public Long deleteOrderByEmail(String email) {
+        return orderRepository.deleteByEmail(email);
+    }
+
     //매일 오루 2시에 주문 처리
     @Scheduled(cron = "0 0 14 * * *")
     public void processOrders() {
