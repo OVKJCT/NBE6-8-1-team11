@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -29,10 +30,14 @@ public class OrderService {
         return orderRepository.findAll();
     }
 
-    public Long deleteOrderByEmail(String email) {
-        return orderRepository.deleteByEmail(email);
+    @Transactional(readOnly = true)
+    public Optional<Order> findById(int id) {
+        return orderRepository.findById(id);
     }
 
+    public void delete(int id) {
+        orderRepository.deleteById(id);
+    }
     //매일 오후 2시에 주문 처리
     @Scheduled(cron = "${scheduler.order.cron}")
     public void processOrders() {
