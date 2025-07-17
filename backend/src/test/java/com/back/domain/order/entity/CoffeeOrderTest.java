@@ -25,8 +25,7 @@ import java.util.List;
 
 import static com.back.domain.order.dto.OrderRequest.OrderItemDto;
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -186,7 +185,38 @@ class CoffeeOrderTest {
                 .andExpect(jsonPath("$.errors[?(@ == 'items[1].quantity: 수량은 1 이상이어야 합니다.')]").exists());
     }
 
-    //삭제 테스트, 예외 핸들러
+    @Test
+    @DisplayName("존재하지 않는 주문 ID 삭제")
+    void t7() throws Exception {
+        mvc.perform(delete("/api/orders/delete/9999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("해당 주문이 존재하지 않습니다."));
+    }
 
-    //@SchedulerTest(내부 함수 기능 테스트)
+    @Test
+    @DisplayName("ID로 주문 삭제 성공")
+    void t8() throws Exception {
+        // given: 먼저 주문을 생성
+        int id = 1;
+        String jsonRequest = objectMapper.writeValueAsString(orderRequest);
+        mvc.perform(
+                        post("/api/orders/new")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonRequest))
+                .andExpect(status().isOk());
+
+        em.flush();
+        em.clear();
+
+        ResultActions resultActions = mvc
+                .perform(
+                        delete("/api/orders/delete/%d".formatted(id))
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(content().string("주문이 성공적으로 삭제되었습니다. 삭제 ID: " + id));
+
+    }
 }

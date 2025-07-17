@@ -6,6 +6,7 @@ import com.back.domain.order.entity.OrderItem;
 import com.back.domain.order.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -42,11 +43,12 @@ public class OrderController {
 
     @DeleteMapping("/orders/delete/{id}")
     @Operation(summary = "주문 삭제")
-    public void deleteOrder(@PathVariable int id) {
-        orderService.deleteOrder(id);
+    public ResponseEntity<String> deleteOrder(@PathVariable int id) {
+        Order order = orderService.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("해당 주문이 존재하지 않습니다."));
+        orderService.delete(id);
+        return ResponseEntity.ok("주문이 성공적으로 삭제되었습니다. 삭제 ID: " + id);
     }
-
-
 
     @PostMapping("/orders/new")
     @Operation(summary = "주문 생성")
