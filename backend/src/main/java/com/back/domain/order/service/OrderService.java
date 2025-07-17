@@ -24,7 +24,10 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    //주문 조회 메서드 추가 가능
+    @Transactional(readOnly = true)
+    public List<Order> findAll() {
+        return orderRepository.findAll();
+    }
 
     //매일 오루 2시에 주문 처리
     @Scheduled(cron = "0 0 14 * * *")
