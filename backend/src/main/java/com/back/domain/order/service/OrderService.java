@@ -29,6 +29,10 @@ public class OrderService {
         return orderRepository.findAll();
     }
 
+    public void deleteOrder(Integer id) {
+        orderRepository.deleteById(id);
+    }
+
     public Long deleteOrderByEmail(String email) {
         return orderRepository.deleteByEmail(email);
     }

@@ -40,6 +40,14 @@ public class OrderController {
                 .toList();
     }
 
+    @DeleteMapping("/orders/delete/{id}")
+    @Operation(summary = "주문 삭제")
+    public void deleteOrder(@PathVariable int id) {
+        orderService.deleteOrder(id);
+    }
+
+
+
     @PostMapping("/orders/new")
     @Operation(summary = "주문 생성")
     public ResponseEntity<String> createOrder(@Validated @RequestBody OrderRequest orderRequest) {
