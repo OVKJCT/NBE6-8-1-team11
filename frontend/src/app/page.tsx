@@ -1,19 +1,10 @@
 "use client";
 
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import { getCoffeeList } from '@/lib/backend/apiV1/coffee';
-import { createOrder } from '@/lib/backend/apiV1/coffee';
-
-type Coffee = {
-  id: number;
-  coffeeName: string;
-  coffeePrice: number;
-  image?: string;
-  title?: string;
-  category?: string;
-};
+import "bootstrap/dist/css/bootstrap.min.css";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { getCoffeeList, Coffee } from "@/lib/backend/apiV1/coffee";
+import { createOrder } from "@/lib/backend/apiV1/order";
 
 export default function Home() {
   const [items, setItems] = useState<Coffee[]>([]);
@@ -26,13 +17,7 @@ export default function Home() {
     const fetch = async () => {
       try {
         const data = await getCoffeeList();
-        setItems(data.map((item) => ({
-          ...item,
-          image: `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/coffees/${item.id}`,
-          title: item.coffeeName,
-          price: item.coffeePrice,
-          category: "커피"
-        })));
+        setItems(data);
       } catch (error) {
         console.error("커피 목록 불러오기 실패:", error);
       }
@@ -62,16 +47,40 @@ export default function Home() {
   }, 0);
 
   const handleOrder = async () => {
+    const totalQty = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
+
+    if (totalQty === 0) {
+      alert("메뉴를 추가해주세요.");
+      return; // 주문 진행 중단
+    }
+
+    if (!email.trim()) {
+      alert("이메일을 입력해주세요.");
+      return;
+    }
+    if (!address.trim()) {
+      alert("주소를 입력해주세요.");
+      return;
+    }
+    if (!zipCode.trim()) {
+      alert("우편번호를 입력해주세요.");
+      return;
+    }
+    
     try {
-      const orders = Object.entries(cart).map(([id, qty]) => ({
-        orderId: id,
+      const items = Object.entries(cart).map(([id, qty]) => ({
+        productId: Number(id),
         quantity: qty,
-        email,
-        address,
-        zipCode,
       }));
 
-      await Promise.all(orders.map(order => createOrder(order)));
+      const orderRequest = {
+        email,
+        address,
+        zipcode: zipCode,
+        items,
+      };
+
+      await createOrder(orderRequest);
 
       alert("주문이 완료되었습니다!");
       setCart({});
@@ -98,11 +107,17 @@ export default function Home() {
               {items.map(item => (
                 <li key={item.id} className="list-group-item d-flex mt-3">
                   <div className="col-2">
-                    <Image className="img-fluid" src={item.image!} alt="img" width={56} height={56} />
+                    <Image
+                      className="img-fluid"
+                      src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/coffees/${item.id}`}
+                      alt="img"
+                      width={56}
+                      height={56}
+                    />
                   </div>
                   <div className="col">
-                    <div className="row text-muted">{item.category}</div>
-                    <div className="row">{item.title}</div>
+                    <div className="row text-muted">커피</div>
+                    <div className="row">{item.coffeeName}</div>
                   </div>
                   <div className="col text-center price">{item.coffeePrice.toLocaleString()}원</div>
                   <div className="col text-end action">
@@ -122,17 +137,33 @@ export default function Home() {
                 const item = items.find(i => i.id === +id);
                 if (!item) return null;
                 return (
-                  <div key={id} className="d-flex align-items-center mb-2">
-                    <span className="me-2">{item.title}</span>
-                    <span className="badge bg-dark me-1">{qty}개</span>
-                    <button
-                      className="btn btn-outline-dark btn-sm me-1"
-                      onClick={() => handleAdd(item.id)}
-                    >+</button>
-                    <button
-                      className="btn btn-outline-danger btn-sm me-1"
-                      onClick={() => handleRemove(item.id)}
-                    >-</button>
+                  <div
+                    key={id}
+                    className="d-flex align-items-start justify-content-between mb-2"
+                  >
+                    <div style={{
+                      flex: 1,
+                      maxWidth: '110%',
+                      wordBreak: 'keep-all',
+                      lineHeight: 1.4
+                    }}>
+                      {item.coffeeName}
+                    </div>
+                  
+                    <div
+                      className="d-flex align-items-center justify-content-end"
+                      style={{ minWidth: '130px', whiteSpace: 'nowrap', marginLeft: '8px' }}
+                    >
+                      <span className="badge bg-dark me-1">{qty}개</span>
+                      <button
+                        className="btn btn-outline-dark btn-sm me-1"
+                        onClick={() => handleAdd(item.id)}
+                      >+</button>
+                      <button
+                        className="btn btn-outline-danger btn-sm"
+                        onClick={() => handleRemove(item.id)}
+                      >-</button>
+                    </div>
                   </div>
                 );
               })}
