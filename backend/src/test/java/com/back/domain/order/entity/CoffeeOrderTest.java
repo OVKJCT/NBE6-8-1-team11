@@ -100,7 +100,7 @@ class CoffeeOrderTest {
         // 2. MockMvc를 사용하여 POST 요청 수행 및 결과 검증
         long count = orderService.count() + 1;
         mvc.perform(
-                        post("/api/orders")
+                        post("/api/orders/new")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonRequest)) // 요청 본문에 JSON 문자열을 포함
                 .andExpect(status().isOk())
@@ -118,7 +118,7 @@ class CoffeeOrderTest {
         // 2. MockMvc를 사용하여 POST 요청 수행 및 결과 검증
 
         mvc.perform(
-                        post("/api/orders")
+                        post("/api/orders/new")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonRequest)) // 요청 본문에 JSON 문자열을 포함
                 .andExpect(status().isBadRequest()) // 잘못된 요청이므로 400 Bad Request 응답을 기대
@@ -138,7 +138,7 @@ class CoffeeOrderTest {
         // 2. MockMvc를 사용하여 POST 요청 수행 및 결과 검증
 
         mvc.perform(
-                        post("/api/orders")
+                        post("/api/orders/new")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonRequest)) // 요청 본문에 JSON 문자열을 포함
                 .andExpect(status().isBadRequest()) // 잘못된 요청이므로 400 Bad Request 응답을 기대
@@ -159,7 +159,7 @@ class CoffeeOrderTest {
         // 2. MockMvc를 사용하여 POST 요청 수행 및 결과 검증
 
         mvc.perform(
-                        post("/api/orders")
+                        post("/api/orders/new")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonRequest)) // 요청 본문에 JSON 문자열을 포함
                 .andExpect(status().isBadRequest()) // 잘못된 요청이므로 400 Bad Request 응답을 기대
@@ -176,7 +176,7 @@ class CoffeeOrderTest {
         String jsonRequest = objectMapper.writeValueAsString(orderRequest);
 
         mvc.perform(
-                        post("/api/orders")
+                        post("/api/orders/new")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonRequest))
                 .andExpect(status().isBadRequest())
@@ -187,4 +187,6 @@ class CoffeeOrderTest {
     }
 
     //삭제 테스트, 예외 핸들러
+
+    //@SchedulerTest(내부 함수 기능 테스트)
 }
